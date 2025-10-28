@@ -1,0 +1,34 @@
+# IDEs
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# Virtual environment
+.venv/
+venv/
+
+# Environment
+.env
+*.env
+
+# Log
+logs/
+logs/
+
+# System
+.DS_Store
+Thumbs.db
+
+# uv
+*.pyc
+.python-version
+
+# ROS2
+build/
+install/
+log/
