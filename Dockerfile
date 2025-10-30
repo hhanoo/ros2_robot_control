@@ -57,7 +57,10 @@ RUN python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel uv
 # Python Dependencies ------------------------------------------------------------
 RUN uv pip install --system \
     numpy \
-    setuptools==69.5.1
+    setuptools==69.5.1 \ 
+    opencv-python \
+    pyrealsense2 \
+    matplotlib
 
 # Set locale ------------------------------------------------------------
 RUN apt-get update && apt-get install -y locales && \
