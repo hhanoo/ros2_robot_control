@@ -653,8 +653,8 @@ if __name__ == '__main__':
     Standalone test for URClass (ROS2-independent)
     ------------------------------------------------
     How to run (for standalone testing in ROS2 environment):
-        cd ros2_ws/src
-        PYTHONPATH=ros2_ws/src python3 -m ur_tcp_bridge.ur_tcp_bridge.ur_class
+        cd /ros2_ws
+        PYTHONPATH=/ros2_ws/src python3 -m ur_tcp_bridge.ur_tcp_bridge.ur_class
     """
 
     # 0. connect to robot

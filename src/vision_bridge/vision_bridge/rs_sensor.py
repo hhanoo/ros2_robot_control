@@ -175,8 +175,8 @@ if __name__ == "__main__":
     Standalone test for RSSensor (ROS2-independent)
     ------------------------------------------------
     How to run (for standalone testing in ROS2 environment):
-        cd ros2_ws/src
-        PYTHONPATH=ros2_ws/src python3 -m vision_bridge.vision_bridge.rs_sensor
+        cd /ros2_ws
+        PYTHONPATH=/ros2_ws/src python3 -m vision_bridge.vision_bridge.rs_sensor
     """
 
     import cv2
