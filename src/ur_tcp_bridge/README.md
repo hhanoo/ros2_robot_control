@@ -59,7 +59,8 @@ ur_tcp_bridge/
 ├── setup.py
 ├── README.md
 └── ur_tcp_bridge/
-  ├── URClass.py
+  ├── logger.py
+  ├── ur_class.py
   └── ur_bridge_node.py
 ```
 
@@ -70,7 +71,7 @@ ur_tcp_bridge/
 ```bash
 cd ~/ros2_ws
 source /opt/ros/humble/setup.bash
-colcon build --symlink-install
+colcon build --symlink-install --packages-select ur_tcp_bridge
 source install/setup.bash
 ```
 

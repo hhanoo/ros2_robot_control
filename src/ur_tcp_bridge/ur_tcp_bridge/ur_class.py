@@ -6,6 +6,8 @@ import time
 import threading
 import numpy as np
 
+from .logger import Logger
+
 
 class URClass():
 
@@ -65,7 +67,7 @@ class URClass():
         """
 
         if self.is_connected():
-            print("[INFO] Already connected.")
+            print(Logger.info("Already connected."))
             return True
 
         try:
@@ -73,11 +75,11 @@ class URClass():
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.socket.connect((self.UR_IP, self.UR_PORT))
             self.connected = True
-            print(f"[INFO] Connection successful: {self.UR_IP}:{self.UR_PORT}")
+            print(Logger.info(f"Connection successful: {self.UR_IP}:{self.UR_PORT}"))
 
             # Check if update thread is already running
             if self.update_thread is not None and self.update_thread.is_alive():
-                print("[INFO] Status thread already running.")
+                print(Logger.info("Status thread already running."))
             # Start background thread for status updates
             else:
                 self.update_thread = threading.Thread(target=self._update_info, daemon=True)
@@ -87,7 +89,7 @@ class URClass():
             return True
 
         except Exception as e:
-            print(f"[ERROR] Connection failed: {e}")
+            print(Logger.error(f"Connection failed: {e}"))
             self.connected = False
             if self.socket is not None:
                 self.socket.close()
@@ -99,7 +101,7 @@ class URClass():
         Disconnect from UR robot controller.
         """
         if not self.is_connected():
-            print("[INFO] Already disconnected.")
+            print(Logger.info("Already disconnected."))
             return False
 
         try:
@@ -112,10 +114,10 @@ class URClass():
                 self.socket.close()
                 self.socket = None
 
-            print(f"[INFO] Disconnection successful: {self.UR_IP}:{self.UR_PORT}")
+            print(Logger.info(f"Disconnection successful: {self.UR_IP}:{self.UR_PORT}"))
             return True
         except Exception as e:
-            print(f"[ERROR] Disconnection failed: {e}")
+            print(Logger.error(f"Disconnection failed: {e}"))
             return False
 
     def is_connected(self):
@@ -158,7 +160,7 @@ class URClass():
         elif mode == 'abs':
             q_cmd = np.array(des_q, dtype=np.float32)
         else:
-            print(f"[ERROR] moveJ: Invalid mode ({mode}). Must be 'abs' or 'rel'.")
+            print(Logger.error(f"moveJ: Invalid mode ({mode}). Must be 'abs' or 'rel'."))
             return
 
         # Build command string
@@ -199,7 +201,7 @@ class URClass():
         elif mode == 'abs':
             X_cmd = np.array(des_X, dtype=np.float32)
         else:
-            print(f"[ERROR] moveL: Invalid mode ({mode}). Must be 'abs' or 'rel'.")
+            print(Logger.error(f"moveL: Invalid mode ({mode}). Must be 'abs' or 'rel'."))
             return
 
         # Build command string
@@ -230,7 +232,7 @@ class URClass():
         # Input validation
         T = np.array(T, dtype=np.float32)
         if T.size != 16:
-            print("[ERROR] movel_T: Input must be a 16-element array representing 4x4 matrix.")
+            print(Logger.error("movel_T: Input must be a 16-element array representing 4x4 matrix."))
             return
 
         # Reshape into 4x4 matrix
@@ -261,7 +263,7 @@ class URClass():
 
         while self.send_move_flag:
             if self.robot_state == -1:
-                print("[ERROR] Robot is in error state.")
+                print(Logger.error("Robot is in error state."))
                 break
             elif self.robot_state == 1:
                 self.send_move_flag = False
@@ -270,10 +272,10 @@ class URClass():
 
         while True:
             if self.robot_state == 0:  # Idle state
-                print("[INFO] Robot is idle. Motion finished.")
+                print(Logger.info("Robot is idle. Motion finished."))
                 break
             if time.time() - start_time > timeout:
-                print(f"[WARNING] wait_move timeout after {timeout} seconds")
+                print(Logger.warning(f"wait_move timeout after {timeout} seconds"))
                 break
 
     def set_velocity(self, velocity):
@@ -337,7 +339,7 @@ class URClass():
 
         # Validation
         if port < 0 or port >= self.n_digital_io:
-            print(f"[ERROR] controlbox_digital_out: Invalid port number ({port}). Must be 0-{self.n_digital_io-1}.")
+            print(Logger.error(f"controlbox_digital_out: Invalid port number ({port}). Must be 0-{self.n_digital_io-1}."))
             return
 
         # Build command string
@@ -357,7 +359,7 @@ class URClass():
 
         # Validation
         if port < 0 or port >= self.n_digital_io:
-            print(f"[ERROR] controlbox_digital_in: Invalid port number ({port}). Must be 0-{self.n_digital_io-1}.")
+            print(Logger.error(f"controlbox_digital_in: Invalid port number ({port}). Must be 0-{self.n_digital_io-1}."))
             return
 
         return self.digital_input[port]
@@ -432,13 +434,13 @@ class URClass():
                     _des_T[0:3, 3] = np.array(_des_X[0:3], dtype=np.float32)  # translation vector
                     self.des_T = _des_T
             else:
-                print("[WARNING] Invalid message length or header.")
+                print(Logger.warning("Invalid message length or header."))
 
         except Exception as e:
             if not self.connected:
-                print("[INFO] Robot monitoring stopped (manual disconnect).")
+                print(Logger.info("Robot monitoring stopped (manual disconnect)."))
 
-            print(f"[ERROR] robot_info: {e}. Reconnecting...")
+            print(Logger.error(f"robot_info: {e}. Reconnecting..."))
             self.connected = False
 
             try:
@@ -647,25 +649,33 @@ class URClass():
 
 
 if __name__ == '__main__':
+    """
+    Standalone test for URClass (ROS2-independent)
+    ------------------------------------------------
+    How to run (for standalone testing in ROS2 environment):
+        cd ros2_ws/src
+        PYTHONPATH=ros2_ws/src python3 -m ur_tcp_bridge.ur_tcp_bridge.ur_class
+    """
+
     # 0. connect to robot
     robot = URClass(ip="127.0.0.1")
     robot.connect()
 
     # initial delay
     time.sleep(3)
-    print('[Robot] Robot ready')
+    print(Logger.info('[Robot] Robot ready'))
 
     # 1. show desired/current joint position [rad]
-    print("\ndesired joint position [rad]:", robot.des_q, \
-        "\nactual joint position [rad]:", robot.act_q)
+    print(Logger.info(f"Desired joint position [rad]: {robot.des_q}"))
+    print(Logger.info(f"Actual joint position [rad]: {robot.act_q}"))
 
     # 2. show desired/current workspace position [m, rotation vector]
-    print("\ndesired workspace position [x, y, z, rx, ry, rz]:", robot.des_X, \
-          "\nactual workspace position [x, y, z, rx, ry, rz]:", robot.act_X)
+    print(Logger.info(f"Desired workspace position [x, y, z, rx, ry, rz]: {robot.des_X}"))
+    print(Logger.info(f"Actual workspace position [x, y, z, rx, ry, rz]: {robot.act_X}"))
 
     # 3. show desired/current transformation matrix
-    print("\ndesired transformation matrix:\n", robot.des_T, \
-          "\nactual transformation matrix:\n", robot.act_T)
+    print(Logger.info(f"Desired transformation matrix:\n {robot.des_T}"))
+    print(Logger.info(f"Actual transformation matrix:\n {robot.act_T}"))
 
     # 4. joint motion, absolute [deg]
     robot.movej([-70. * np.pi / 180., -60. * np.pi / 180., -130. * np.pi / 180., \

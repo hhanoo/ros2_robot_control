@@ -10,7 +10,7 @@ from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Pose
 
 # Low-level TCP controller class
-from .URClass import URClass
+from .ur_class import URClass
 
 
 class URBridgeNode(Node):
