@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'ur_tcp_bridge'
+package_name = 'ur_bridge_py'
 
 setup(
     name=package_name,
@@ -14,12 +14,12 @@ setup(
     zip_safe=True,
     maintainer='root',
     maintainer_email='woo980711@gmail.com',
-    description='ROS2 bridge for controlling UR robot (TCP 30003)',
+    description='ROS2 Bridge for controlling UR robot via TCP socket (Python)',
     license='TODO: License declaration',
     extras_require={
         'test': ['pytest',],
     },
     entry_points={
-        'console_scripts': ['ur_bridge_node = ur_tcp_bridge.ur_bridge_node:main',],
+        'console_scripts': ['ur_bridge_node = ur_bridge_py.ur_bridge_node:main'],
     },
 )

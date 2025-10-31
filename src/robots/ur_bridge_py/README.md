@@ -1,4 +1,4 @@
-# ur_tcp_bridge
+# ur_bridge_py
 
 ROS 2 Python package for controlling a **UR (Universal Robots)** manipulator via **TCP port 30003**.
 
@@ -19,7 +19,7 @@ and exposes its functions to ROS 2 as **topics** and **services** for real-time 
                   │  TCP Socket
                   │
     ┌─────────────┴──────────────┐
-    │        URClass.py          │
+    │         ur_class.py        │
     │  - Low-level TCP control   │
     │  - Parses robot state data │
     │  - Sends motion commands   │
@@ -31,16 +31,16 @@ and exposes its functions to ROS 2 as **topics** and **services** for real-time 
     │          (ROS 2 Node in rclpy)           │
     │                                          │
     │ Publishes:                               │
-    │  • /ur/actual_joint (JointState)         │
-    │  • /ur/actual_pose  (Pose)               │
-    │  • /ur/actual_T     (Float64MultiArray)  │
-    │  • /ur/digital_input (BoolMultiArray)    │
+    │  • /ur/actual_joint  (JointState)        │
+    │  • /ur/actual_pose   (Pose)              │
+    │  • /ur/actual_T      (Float64MultiArray) │
+    │  • /ur/digital_input (Int32MultiArray)   │
     │  • /ur/state_text    (String)            │
     │                                          │
     │ Subscribes:                              │
-    │  • /ur/desired_joint (Float64MultiArray) │
-    │  • /ur/desired_pose  (Float64MultiArray) │
-    │  • /ur/desired_T     (Float64MultiArray) │
+    │  • /ur/desired_joint  (Float64MultiArray)│
+    │  • /ur/desired_pose   (Float64MultiArray)│
+    │  • /ur/desired_T      (Float64MultiArray)│
     │  • /ur/digital_output (Int32MultiArray)  │
     │                                          │
     │ Service:                                 │
@@ -54,14 +54,15 @@ and exposes its functions to ROS 2 as **topics** and **services** for real-time 
 ## ⚙️ Package Structure
 
 ```
-ur_tcp_bridge/
+ur_bridge/
+├── ur_tcp_bridge/
+│ ├── logger.py
+│ ├── ur_class.py
+│ └── ur_bridge_node.py
 ├── package.xml
-├── setup.py
 ├── README.md
-└── ur_tcp_bridge/
-  ├── logger.py
-  ├── ur_class.py
-  └── ur_bridge_node.py
+├── setup.cfg
+└── setup.py
 ```
 
 ---
@@ -69,9 +70,9 @@ ur_tcp_bridge/
 ## 🚀 How to Build
 
 ```bash
-cd ~/ros2_ws
+cd /ros2_ws
 source /opt/ros/humble/setup.bash
-colcon build --symlink-install --packages-select ur_tcp_bridge
+colcon build --symlink-install --packages-select ur_bridge_py
 source install/setup.bash
 ```
 
@@ -80,13 +81,13 @@ source install/setup.bash
 ## ▶️ How to Run
 
 ```bash
-ros2 run ur_tcp_bridge ur_bridge_node
+ros2 run ur_bridge_py ur_bridge_node
 ```
 
 You can also specify robot IP as a parameter:
 
 ```bash
-ros2 run ur_tcp_bridge ur_bridge_node --ros-args -p ur_ip:=192.168.1.77
+ros2 run ur_bridge_py ur_bridge_node --ros-args -p ur_ip:=192.168.1.77
 ```
 
 ---
@@ -158,19 +159,19 @@ ros2 service call /get_robot_state std_srvs/srv/Trigger
 
 `URClass` handles low-level socket communication with the UR controller (TCP port **30003**):
 
-- Real-time state update via binary packet parsing (5120 bytes)
+- Real-time state update via binary packet parsing
 - Supported Commands:
 
-  - `connect()`, `disconect()`, `is_connected()`
+  - `connect()`, `disconnect()`, `is_connected()`
   - `movej()`, `movel_pose()`, `movel_T()`
   - `wait_move()`, `set_velocity()`, `stopj()`, `stopl()`
-  - `controlbox_digital_out()`
+  - `controlbox_digital_out()`, `controlbox_digital_in()`
 
 - Maintains:
 
   - `act_q`, `act_X`, `act_T` — Actual joint, pose, transform
   - `des_q`, `des_X`, `des_T` — Target states
-  - `digital_input`, `robot_state`, `safety_mode`
+  - `digital_input`, `robot_state`, `safety_mode`, `prog_state`
 
 ---
 

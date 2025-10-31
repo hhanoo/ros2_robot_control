@@ -6,7 +6,7 @@ import time
 import threading
 import numpy as np
 
-from .logger import Logger
+from ur_bridge_py.logger import Logger
 
 
 class URClass():
@@ -654,7 +654,7 @@ if __name__ == '__main__':
     ------------------------------------------------
     How to run (for standalone testing in ROS2 environment):
         cd /ros2_ws
-        PYTHONPATH=/ros2_ws/src python3 -m ur_tcp_bridge.ur_tcp_bridge.ur_class
+        PYTHONPATH=/ros2_ws/src/robots/ur_bridge_py python3 -m ur_bridge_py.ur_class
     """
 
     # 0. connect to robot

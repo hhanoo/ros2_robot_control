@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>ur_tcp_bridge</name>
+  <name>ur_bridge_py</name>
   <version>0.0.0</version>
-  <description>ROS2 Bridge for controlling UR robot via TCP socket</description>
+  <description>ROS2 Bridge for controlling UR robot via TCP socket (Python)</description>
   <maintainer email="woo980711@gmail.com">root</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_python</buildtool_depend>
+  
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>

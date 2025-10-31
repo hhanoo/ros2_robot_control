@@ -3,14 +3,14 @@ from rclpy.node import Node
 
 # Services
 from std_srvs.srv import Trigger
-from std_msgs.msg import Float64MultiArray, Int32MultiArray, String
 
 # Messages
+from std_msgs.msg import Float64MultiArray, Int32MultiArray, String
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Pose
 
 # Low-level TCP controller class
-from .ur_class import URClass
+from ur_bridge_py.ur_class import URClass
 
 
 class URBridgeNode(Node):
