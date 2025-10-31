@@ -1,11 +1,11 @@
-# ur_bridge_py
+# ur_bridge_cpp
 
-ROS 2 Python package for controlling a **UR (Universal Robots)** manipulator via **TCP port 30003**.
+ROS 2 C++ package for controlling a **UR (Universal Robots)** manipulator via **TCP port 30003**.
 
-This package bridges a custom Python controller class (`URClass`) that communicates directly with the robot,
-and exposes its functions to ROS 2 as **topics** and **services** for real-time control and monitoring.
+This package bridges a custom C++ controller class (`URClass`) that communicates directly with the robot,
+and exposes its
 
-> 🧱 Tested on: **ROS 2 Humble (Python 3.10)**
+> 🧱 !! Not Tested !! Developing
 
 ---
 
@@ -19,15 +19,15 @@ and exposes its functions to ROS 2 as **topics** and **services** for real-time 
                   │  TCP Socket
                   │
     ┌─────────────┴──────────────┐
-    │         ur_class.py        │
+    │      ur_class.hpp/cpp      │
     │  - Low-level TCP control   │
     │  - Parses robot state data │
     │  - Sends motion commands   │
     └─────────────▲──────────────┘
-                  │  Python API
+                  │
                   │
     ┌─────────────┴────────────────────────────┐
-    │            ur_bridge_node.py             │
+    │           ur_bridge_node.cpp             │
     │          (ROS 2 Node in rclpy)           │
     │                                          │
     │ Publishes:                               │
@@ -54,15 +54,16 @@ and exposes its functions to ROS 2 as **topics** and **services** for real-time 
 ## ⚙️ Package Structure
 
 ```
-ur_bridge_py/
-├── ur_bridge_py/
-│ ├── logger.py
-│ ├── ur_class.py
-│ └── ur_bridge_node.py
+ur_bridge_cpp/
+├── include/ur_bridge_cpp/
+│   └── ur_class.hpp
+├── launch/
+├── src/
+│   ├── ur_bridge_node.cpp
+│   └── ur_class.cpp
+├── CMakeLists.txt
 ├── package.xml
-├── README.md
-├── setup.cfg
-└── setup.py
+└── README.md
 ```
 
 ---
@@ -72,7 +73,7 @@ ur_bridge_py/
 ```bash
 cd /ros2_ws
 source /opt/ros/humble/setup.bash
-colcon build --symlink-install --packages-select ur_bridge_py
+colcon build --symlink-install --packages-select ur_bridge_cpp
 source install/setup.bash
 ```
 
@@ -81,13 +82,13 @@ source install/setup.bash
 ## ▶️ How to Run
 
 ```bash
-ros2 run ur_bridge_py ur_bridge_node
+
 ```
 
 You can also specify robot IP as a parameter:
 
 ```bash
-ros2 run ur_bridge_py ur_bridge_node --ros-args -p ur_ip:=192.168.1.77
+
 ```
 
 ---
