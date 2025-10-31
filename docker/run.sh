@@ -10,7 +10,10 @@
 
 IMAGE_NAME="ros2-humble-develop"
 CONTAINER_NAME="ros2_robot_control"
-WORKSPACE_DIR="$(pwd)"
+
+# Move to project root (this script is in docker/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # 1. Check if image exists
 if ! docker image inspect "$IMAGE_NAME" >/dev/null 2>&1; then
@@ -32,8 +35,8 @@ docker run -it --rm \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v /dev:/dev:rw \
-    -v $WORKSPACE_DIR:/ros2_ws \
-    $IMAGE_NAME
+    -v "$WORKSPACE_DIR":/ros2_ws \
+    "$IMAGE_NAME"
 
 # 4. Disable X11 access after exit
 echo "[Info] Disabling X11 access after exit..."
