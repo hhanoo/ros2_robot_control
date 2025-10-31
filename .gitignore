@@ -8,6 +8,10 @@ __pycache__/
 *$py.class
 *.egg-info/
 
+# C++
+build/
+.clang-format
+
 # Virtual environment
 .venv/
 venv/
