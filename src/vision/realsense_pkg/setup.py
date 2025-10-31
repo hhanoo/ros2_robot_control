@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'vision_bridge'
+package_name = 'realsense_pkg'
 
 setup(
     name=package_name,
@@ -14,12 +14,12 @@ setup(
     zip_safe=True,
     maintainer='root',
     maintainer_email='woo980711@gmail.com',
-    description='ROS2 bridge for vision sensor',
+    description='ROS2 Package for RealSense Sensor',
     license='TODO: License declaration',
     extras_require={
         'test': ['pytest',],
     },
     entry_points={
-        'console_scripts': [],
+        'console_scripts': ['realsense_node = realsense_pkg.realsense_node:main'],
     },
 )

@@ -1,7 +1,7 @@
 import numpy as np
 import pyrealsense2 as rs
 
-from .logger import Logger
+from realsense_pkg.logger import Logger
 
 
 class RSSensor:
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     ------------------------------------------------
     How to run (for standalone testing in ROS2 environment):
         cd /ros2_ws
-        PYTHONPATH=/ros2_ws/src python3 -m vision_bridge.vision_bridge.rs_sensor
+        PYTHONPATH=/ros2_ws/src/vision/realsense_pkg python3 -m realsense_pkg.realsense_class
     """
 
     import cv2
