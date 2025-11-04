@@ -5,7 +5,7 @@ from rclpy.node import Node
 from std_srvs.srv import Trigger
 
 # Messages
-from std_msgs.msg import Float64MultiArray, Int32MultiArray, String
+from std_msgs.msg import Float64MultiArray, Int32MultiArray, Int32, Bool
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Pose
 
@@ -38,7 +38,8 @@ class URBridgeNode(Node):
         self.act_pose_pub = self.create_publisher(Pose, '/ur/actual_pose', 10)
         self.act_T_pub = self.create_publisher(Float64MultiArray, '/ur/actual_T', 10)
         self.digital_input_pub = self.create_publisher(Int32MultiArray, '/ur/digital_input', 10)
-        self.state_text_pub = self.create_publisher(String, '/ur/state_text', 10)
+        self.robot_state_pub = self.create_publisher(Int32, '/ur/robot_state', 10)
+        self.cmd_send_flag_pub = self.create_publisher(Bool, '/ur/cmd_send_flag', 10)
 
         # -------- Services --------
         self.create_service(Trigger, 'get_robot_state', self.get_robot_state_cb)
@@ -74,7 +75,6 @@ class URBridgeNode(Node):
             return
         self.robot.movej(msg.data)
         self.get_logger().info("movej command sent")
-        self.robot.wait_move()
 
     def desired_pose_cb(self, msg: Float64MultiArray):
         if len(msg.data) != 6:
@@ -82,7 +82,6 @@ class URBridgeNode(Node):
             return
         self.robot.movel_pose(msg.data)
         self.get_logger().info("movel(pose) command sent")
-        self.robot.wait_move()
 
     def desired_T_cb(self, msg: Float64MultiArray):
         if len(msg.data) != 16:
@@ -90,7 +89,6 @@ class URBridgeNode(Node):
             return
         self.robot.movel_T(msg.data)
         self.get_logger().info("movel(T) command sent")
-        self.robot.wait_move()
 
     def digital_output_cb(self, msg: Int32MultiArray):
         if len(msg.data) != 2:
@@ -125,12 +123,15 @@ class URBridgeNode(Node):
         digital_input.data = [int(val) for val in self.robot.digital_input]
         self.digital_input_pub.publish(digital_input)
 
-        # -------- Publish State Text --------
-        state_text = String()
-        state_text.data = (f"robot_state={self.robot.robot_state}, "
-                           f"mode={self.robot.mode}, "
-                           f"safety_mode={self.robot.safety_mode}")
-        self.state_text_pub.publish(state_text)
+        # -------- Publish Robot State --------
+        robot_state = Int32()
+        robot_state.data = self.robot.robot_state
+        self.robot_state_pub.publish(robot_state)
+
+        # -------- Publish Command Send Flag --------
+        cmd_send_flag = Bool()
+        cmd_send_flag.data = bool(self.robot.send_move_flag)
+        self.cmd_send_flag_pub.publish(cmd_send_flag)
 
     # ============================ Shutdown ============================
 
@@ -150,9 +151,12 @@ def main():
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.get_logger().info("Node interrupted, shutting down...")
-    node.robot.disconnect()
-    node.destroy_node()
-    rclpy.shutdown()
+    finally:
+        node.robot.disconnect()
+        node.destroy_node()
+
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
